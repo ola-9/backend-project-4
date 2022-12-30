@@ -1,0 +1,28 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "Page loader utility",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ola-9/backend-project-4.git"
+  },
+  "author": "ola-9",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ola-9/backend-project-4/issues"
+  },
+  "homepage": "https://github.com/ola-9/backend-project-4#readme",
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "eslint": "^8.30.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^29.3.1",
+    "jest-cli": "^29.3.1"
+  }
+}
