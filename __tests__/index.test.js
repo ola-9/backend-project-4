@@ -10,12 +10,15 @@ import path from 'path';
 import nock from 'nock';
 import os from 'os';
 import fs from 'fs/promises';
-import pageLoader from '../src/index';
+import pageLoader from '../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const getFixturePath = (name) => path.join(__dirname, '..', '__fixtures__', name);
+
+// https://github.com/nock/nock#debugging
+// user @local$ DEBUG = nock.* node my_test.js
 
 nock.disableNetConnect();
 
