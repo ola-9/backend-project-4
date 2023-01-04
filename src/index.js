@@ -1,10 +1,14 @@
 /* eslint-disable import/extensions */
 import axios from 'axios';
 import fs from 'fs/promises';
+import debug from 'debug';
+// import Listr from 'listr';
 import {
   updateHtml,
   downloadResources,
 } from './resources.js';
+
+const debugPageLoader = debug('page-loader');
 
 const getPathname = (hostname, pathname = '', type = '') => {
   const path = pathname.length === 1 ? '' : pathname;
@@ -23,7 +27,6 @@ const pageLoader = (url, dir = process.cwd()) => {
 
   return axios.get(url)
     .then(({ data }) => {
-      // console.log('data: ', data);
       const result = updateHtml(data, origin, originpath, filespath);
       resourceDetails = result.resourceDetails;
       html = result.updatedHtml;
@@ -33,11 +36,14 @@ const pageLoader = (url, dir = process.cwd()) => {
     .then(() => fs.mkdir(`${dir}/${filespath}`, { recursive: true }))
     .then(() => fs.writeFile(`${dir}/${pagepath}`, html))
     .then(() => downloadResources(resourceDetails, dir))
-    .then(() => `${dir}/${pagepath}`);
+    .then(() => {
+      debugPageLoader(`Page was successfully downloaded into ${dir}${pagepath}`);
+      return `${dir}/${pagepath}`;
+    });
 };
 
 // pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
-// pageLoader('https://ru.hexlet.io/courses', './load-courses');
+pageLoader('https://ru.hexlet.io/courses', './load-courses');
 // pageLoader('https://htmlacademy.ru/', './load-courses');
 
 export default pageLoader;
