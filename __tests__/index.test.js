@@ -41,6 +41,15 @@ test('page is downloaded', async () => {
   nock('https://ru.hexlet.io')
     .get('/assets/professions/nodejs.png')
     .reply(200, expectedImg);
+  nock('https://ru.hexlet.io')
+    .get('/assets/application.css')
+    .reply(200, expectedImg);
+  nock('https://ru.hexlet.io')
+    .get('/packs/js/runtime.js')
+    .reply(200, expectedImg);
+  nock('https://ru.hexlet.io')
+    .get('/courses.html')
+    .reply(200, expectedImg);
 
   const filepath = await pageLoader('https://ru.hexlet.io/courses', tempDir);
   const actual = await fs.readFile(filepath, 'utf-8');
@@ -54,6 +63,18 @@ test('images are downloaded', async () => {
 
   nock('https://ru.hexlet.io')
     .get('/assets/professions/nodejs.png')
+    .reply(200, expectedImg);
+
+  nock('https://ru.hexlet.io')
+    .get('/assets/application.css')
+    .reply(200, expectedImg);
+
+  nock('https://ru.hexlet.io')
+    .get('/packs/js/runtime.js')
+    .reply(200, expectedImg);
+
+  nock('https://ru.hexlet.io')
+    .get('/courses.html')
     .reply(200, expectedImg);
 
   const imageFilename = 'ru-hexlet-io-assets-professions-nodejs.png';
