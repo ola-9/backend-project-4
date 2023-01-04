@@ -27,7 +27,7 @@ const pageLoader = (url, dir = process.cwd()) => {
       const result = updateHtml(data, origin, originpath, filespath);
       resourceDetails = result.resourceDetails;
       html = result.updatedHtml;
-      // console.log('resourceDetails: ', resourceDetails);
+      // console.log('resourclearceDetails: ', resourceDetails);
     })
     .then(() => fs.mkdir(dir, { recursive: true }))
     .then(() => fs.mkdir(`${dir}/${filespath}`, { recursive: true }))
@@ -38,6 +38,6 @@ const pageLoader = (url, dir = process.cwd()) => {
 
 // pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
 // pageLoader('https://ru.hexlet.io/courses', './load-courses');
-// pageLoader('https://www.tema.ru/main.html', './load-courses');
+// pageLoader('https://htmlacademy.ru/', './load-courses');
 
 export default pageLoader;

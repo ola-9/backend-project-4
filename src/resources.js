@@ -12,12 +12,15 @@ const resources = [
 
 export const updateHtml = (html, origin, originpath, filespath) => {
   const $ = load(html);
-  // console.log('$(img): ', $('img').attr('src'));
   const resourceDetails = [];
-
   resources.forEach(({ tag, attr }) => {
-    $(tag).each((i, item) => {
+    $(tag).toArray().forEach((item) => { // https://api.jquery.com/toarray/
       const itemAttr = $(item).attr(attr);
+      // https://www.designcise.com/web/tutorial/how-to-check-if-an-element-has-attribute-using-jquery-and-javascript
+      if (typeof itemAttr === 'undefined') { // if attribute doesn't exist
+        // console.log('undefined!!!!!!');
+        return;
+      }
       const urlObj = new URL(itemAttr, origin);
       const originUrlObj = new URL(origin);
 

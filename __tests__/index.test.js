@@ -48,7 +48,7 @@ test('page is downloaded', async () => {
     .get('/packs/js/runtime.js')
     .reply(200, expectedImg);
   nock('https://ru.hexlet.io')
-    .get('/courses.html')
+    .get('/courses')
     .reply(200, expectedImg);
 
   const filepath = await pageLoader('https://ru.hexlet.io/courses', tempDir);
@@ -74,7 +74,7 @@ test('images are downloaded', async () => {
     .reply(200, expectedImg);
 
   nock('https://ru.hexlet.io')
-    .get('/courses.html')
+    .get('/courses')
     .reply(200, expectedImg);
 
   const imageFilename = 'ru-hexlet-io-assets-professions-nodejs.png';
