@@ -30,7 +30,7 @@ const pageLoader = (url, dir = process.cwd()) => {
       const result = updateHtml(data, origin, originpath, filespath);
       resourceDetails = result.resourceDetails;
       html = result.updatedHtml;
-      // console.log('resourclearceDetails: ', resourceDetails);
+      // console.log('resourceDetails: ', resourceDetails);
     })
     .then(() => fs.mkdir(dir, { recursive: true }))
     .then(() => fs.mkdir(`${dir}/${filespath}`, { recursive: true }))
@@ -39,8 +39,7 @@ const pageLoader = (url, dir = process.cwd()) => {
     .then(() => {
       debugPageLoader(`Page was successfully downloaded into ${dir}${pagepath}`);
       return `${dir}/${pagepath}`;
-    })
-    .catch((err) => console.log(err));
+    });
 };
 
 // pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
