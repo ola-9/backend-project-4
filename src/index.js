@@ -39,11 +39,12 @@ const pageLoader = (url, dir = process.cwd()) => {
     .then(() => {
       debugPageLoader(`Page was successfully downloaded into ${dir}${pagepath}`);
       return `${dir}/${pagepath}`;
-    });
+    })
+    .catch((err) => console.log(err));
 };
 
 // pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
-pageLoader('https://ru.hexlet.io/courses', './load-courses');
+// pageLoader('https://ru.hexlet.io/courses', './load-courses');
 // pageLoader('https://htmlacademy.ru/', './load-courses');
 
 export default pageLoader;

@@ -2,6 +2,9 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "Page loader utility",
+  "bin": {
+    "page-loader": "bin/pageLoader.js"
+  },
   "main": "src/index.js",
   "type": "module",
   "scripts": {
