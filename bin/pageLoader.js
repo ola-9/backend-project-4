@@ -9,9 +9,11 @@ program
   .description('Page loader utility')
   .option('-o, --output [dir]', 'output dir (default: "/home/user/current-dir")')
   .argument('<url>')
-  .action((url, option) => {
-    pageLoader(url, option.output).then((result) => console.log(result))
-      .catch((err) => console.error(err.message));
-  });
+  .action((url, option) => pageLoader(url, option.output)
+    .then((result) => console.log(`Page was loaded to ${result}`))
+    .catch((err) => {
+      console.error(err.message);
+      process.exit(1);
+    }));
 
 program.parse(process.argv);
