@@ -18,7 +18,6 @@ export const updateHtml = (html, origin, originpath, filespath) => {
       const itemAttr = $(item).attr(attr);
       // https://www.designcise.com/web/tutorial/how-to-check-if-an-element-has-attribute-using-jquery-and-javascript
       if (typeof itemAttr === 'undefined') { // if attribute doesn't exist
-        // console.log('undefined!!!!!!');
         return;
       }
       const urlObj = new URL(itemAttr, origin);
@@ -45,7 +44,10 @@ export const updateHtml = (html, origin, originpath, filespath) => {
 export const downloadResources = (resourceDetails, dir) => {
   const promises = resourceDetails.map(({ filename, url }) => axios.get(url, { responseType: 'arraybuffer' })
     .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data))
-    .catch((err) => console.log(err)));
+    .catch((err) => {
+      // console.log(err);
+      throw new Error(`Error in downloading resource: ${err}`);
+    }));
 
   return Promise.all(promises);
 };

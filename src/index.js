@@ -17,7 +17,16 @@ const getPathname = (hostname, pathname = '', type = '') => {
 };
 
 const pageLoader = (url, dir = process.cwd()) => {
-  const { origin, hostname, pathname } = new URL(url);
+  let pageUrl = '';
+
+  try {
+    pageUrl = new URL(url);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+
+  const { origin, hostname, pathname } = pageUrl;
+
   const pagepath = getPathname(hostname, pathname, '.html');
   const filespath = getPathname(hostname, pathname, '_files');
   const originpath = getPathname(hostname);
@@ -39,6 +48,10 @@ const pageLoader = (url, dir = process.cwd()) => {
     .then(() => {
       debugPageLoader(`Page was successfully downloaded into ${dir}${pagepath}`);
       return `${dir}/${pagepath}`;
+    })
+    .catch((err) => {
+      // console.log(err);
+      throw new Error(`Error in downloading resource: ${err}`);
     });
 };
 
