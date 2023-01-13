@@ -73,10 +73,8 @@ test('errors', async () => {
     .get('/webinars')
     .reply(400);
 
-  expect(async () => {
-    await pageLoader('https://ru.hexlet.io/webinars', tempDir);
-  }).rejects.toThrow();
-  expect(async () => {
-    await pageLoader('https://ru.hexlet.io/webinars', '/none-exist');
-  }).rejects.toThrow();
+  await expect(() => pageLoader('https://ru.hexlet.io/webinars', tempDir))
+    .rejects.toThrow();
+  await expect(() => pageLoader('https://ru.hexlet.io/webinars', '/none-exist'))
+    .rejects.toThrow();
 });
