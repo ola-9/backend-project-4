@@ -45,7 +45,6 @@ export const downloadResources = (resourceDetails, dir) => {
   const promises = resourceDetails.map(({ filename, url }) => axios.get(url, { responseType: 'arraybuffer' })
     .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data))
     .catch((err) => {
-      // console.log(err);
       throw new Error(`Error in downloading resource: ${err}`);
     }));
 

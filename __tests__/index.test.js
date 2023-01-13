@@ -37,7 +37,7 @@ beforeEach(async () => {
   tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 });
 
-test('page is downloaded', async () => {
+test('page and resources are downloaded', async () => {
   nock('https://ru.hexlet.io')
     .get('/courses')
     .reply(200, initial);
@@ -57,32 +57,22 @@ test('page is downloaded', async () => {
   const filepath = await pageLoader('https://ru.hexlet.io/courses', tempDir);
   const actual = await fs.readFile(filepath, 'utf-8');
   expect(actual).toEqual(expected);
-});
-
-test('images are downloaded', async () => {
-  nock('https://ru.hexlet.io')
-    .get('/courses')
-    .reply(200, initial);
-
-  nock('https://ru.hexlet.io')
-    .get('/assets/professions/nodejs.png')
-    .reply(200, expectedImg);
-
-  nock('https://ru.hexlet.io')
-    .get('/assets/application.css')
-    .reply(200, expectedImg);
-
-  nock('https://ru.hexlet.io')
-    .get('/packs/js/runtime.js')
-    .reply(200, expectedImg);
-
-  nock('https://ru.hexlet.io')
-    .get('/courses')
-    .reply(200, expectedImg);
 
   const imageFilename = 'ru-hexlet-io-assets-professions-nodejs.png';
-  const imageFilePath = path.join(tempDir, 'ru-hexlet-io-courses_files', imageFilename); // courses!!!??
-  await pageLoader('https://ru.hexlet.io/courses', tempDir);
+  const imageFilePath = path.join(tempDir, 'ru-hexlet-io-courses_files', imageFilename);
   const actualImage = await fs.readFile(imageFilePath, 'utf-8');
   expect(actualImage).toEqual(expectedImg);
+});
+
+test('errors', async () => {
+  nock('https://ru.hexlet.io')
+    .get('/webinars')
+    .reply(500);
+
+  nock('https://ru.hexlet.io')
+    .get('/webinars')
+    .reply(400);
+
+  expect(async () => pageLoader('https://ru.hexlet.io/webinars', tempDir)).rejects.toThrow();
+  expect(async () => pageLoader('https://ru.hexlet.io/webinars', '/none-exist')).rejects.toThrow();
 });

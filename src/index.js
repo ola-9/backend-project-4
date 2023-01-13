@@ -18,12 +18,12 @@ const getPathname = (hostname, pathname = '', type = '') => {
 
 const pageLoader = (url, dir = process.cwd()) => {
   let pageUrl = '';
-
-  try {
-    pageUrl = new URL(url);
-  } catch (err) {
-    return Promise.reject(err);
-  }
+  pageUrl = new URL(url);
+  // try {
+  //   pageUrl = new URL(url);
+  // } catch (err) {
+  //   return Promise.reject(err);
+  // }
 
   const { origin, hostname, pathname } = pageUrl;
 
@@ -39,7 +39,6 @@ const pageLoader = (url, dir = process.cwd()) => {
       const result = updateHtml(data, origin, originpath, filespath);
       resourceDetails = result.resourceDetails;
       html = result.updatedHtml;
-      // console.log('resourceDetails: ', resourceDetails);
     })
     .then(() => fs.mkdir(dir, { recursive: true }))
     .then(() => fs.mkdir(`${dir}/${filespath}`, { recursive: true }))
@@ -50,13 +49,13 @@ const pageLoader = (url, dir = process.cwd()) => {
       return `${dir}/${pagepath}`;
     })
     .catch((err) => {
-      // console.log(err);
-      throw new Error(`Error in downloading resource: ${err}`);
+      throw new Error(`Something wrong: ${err}`);
     });
 };
 
 // pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
 // pageLoader('https://ru.hexlet.io/courses', './load-courses');
 // pageLoader('https://htmlacademy.ru/', './load-courses');
+// pageLoader('https://test.test/', './load-courses');
 
 export default pageLoader;
