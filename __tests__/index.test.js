@@ -1,4 +1,3 @@
-/* eslint-disable no-return-await */
 /* eslint-disable import/extensions */
 import {
   test,
@@ -65,7 +64,7 @@ test('page and resources are downloaded', async () => {
   expect(actualImage).toEqual(expectedImg);
 });
 
-test('errors', () => {
+test('errors', async () => {
   nock('https://ru.hexlet.io')
     .get('/webinars')
     .reply(500);
@@ -74,6 +73,10 @@ test('errors', () => {
     .get('/webinars')
     .reply(400);
 
-  expect(async () => await pageLoader('https://ru.hexlet.io/webinars', tempDir)).rejects.toThrow();
-  expect(async () => await pageLoader('https://ru.hexlet.io/webinars', '/none-exist')).rejects.toThrow();
+  expect(async () => {
+    await pageLoader('https://ru.hexlet.io/webinars', tempDir);
+  }).rejects.toThrow();
+  expect(async () => {
+    await pageLoader('https://ru.hexlet.io/webinars', '/none-exist')
+  }).rejects.toThrow();
 });
