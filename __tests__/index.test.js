@@ -65,7 +65,7 @@ test('page and resources are downloaded', async () => {
   expect(actualImage).toEqual(expectedImg);
 });
 
-test('errors', async () => {
+test('errors', () => {
   nock('https://ru.hexlet.io')
     .get('/webinars')
     .reply(500);
