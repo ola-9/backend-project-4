@@ -40,17 +40,13 @@ beforeEach(async () => {
 test('page and resources are downloaded', async () => {
   nock('https://ru.hexlet.io')
     .get('/courses')
-    .reply(200, initial);
-  nock('https://ru.hexlet.io')
+    .reply(200, initial)
     .get('/assets/professions/nodejs.png')
-    .reply(200, expectedImg);
-  nock('https://ru.hexlet.io')
+    .reply(200, expectedImg)
     .get('/assets/application.css')
-    .reply(200, expectedImg);
-  nock('https://ru.hexlet.io')
+    .reply(200, expectedImg)
     .get('/packs/js/runtime.js')
-    .reply(200, expectedImg);
-  nock('https://ru.hexlet.io')
+    .reply(200, expectedImg)
     .get('/courses')
     .reply(200, expectedImg);
 
@@ -64,17 +60,18 @@ test('page and resources are downloaded', async () => {
   expect(actualImage).toEqual(expectedImg);
 });
 
-test('errors', async () => {
+const httpErrors = [400, 500];
+
+test.each(httpErrors)('network error: %d', async (errorCode) => {
   nock('https://ru.hexlet.io')
     .get('/webinars')
-    .reply(500);
+    .reply(errorCode)
+    .get('/courses')
+    .reply(errorCode);
 
-  nock('https://ru.hexlet.io')
-    .get('/webinars')
-    .reply(400);
-
+  // https://github.com/jest-community/eslint-plugin-jest/issues/54
   await expect(() => pageLoader('https://ru.hexlet.io/webinars', tempDir))
     .rejects.toThrow();
-  await expect(() => pageLoader('https://ru.hexlet.io/webinars', '/none-exist'))
+  await expect(() => pageLoader('https://ru.hexlet.io/courses', '/none-exist'))
     .rejects.toThrow();
 });

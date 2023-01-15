@@ -1,14 +1,12 @@
 /* eslint-disable import/extensions */
 import axios from 'axios';
 import fs from 'fs/promises';
-import debug from 'debug';
 // import Listr from 'listr';
 import {
   updateHtml,
   downloadResources,
 } from './resources.js';
-
-const debugPageLoader = debug('page-loader');
+import debugPageLoader from './debug.js';
 
 const getPathname = (hostname, pathname = '', type = '') => {
   const path = pathname.length === 1 ? '' : pathname;
@@ -17,15 +15,7 @@ const getPathname = (hostname, pathname = '', type = '') => {
 };
 
 const pageLoader = (url, dir = process.cwd()) => {
-  let pageUrl = '';
-  pageUrl = new URL(url);
-  // try {
-  //   pageUrl = new URL(url);
-  // } catch (err) {
-  //   return Promise.reject(err);
-  // }
-
-  const { origin, hostname, pathname } = pageUrl;
+  const { origin, hostname, pathname } = new URL(url);
 
   const pagepath = getPathname(hostname, pathname, '.html');
   const filespath = getPathname(hostname, pathname, '_files');
@@ -40,16 +30,33 @@ const pageLoader = (url, dir = process.cwd()) => {
       resourceDetails = result.resourceDetails;
       html = result.updatedHtml;
     })
-    .then(() => fs.mkdir(dir, { recursive: true }))
-    .then(() => fs.mkdir(`${dir}/${filespath}`, { recursive: true }))
-    .then(() => fs.writeFile(`${dir}/${pagepath}`, html))
-    .then(() => downloadResources(resourceDetails, dir))
     .then(() => {
-      debugPageLoader(`Page was successfully downloaded into ${dir}${pagepath}`);
+      debugPageLoader(`Create page directory: ${dir}`);
+      return fs.mkdir(dir, { recursive: true });
+    })
+    .then(() => {
+      debugPageLoader(`Create directory for resourses: ${filespath}`);
+      return fs.mkdir(`${dir}/${filespath}`, { recursive: true });
+    })
+    .then(() => {
+      debugPageLoader(`Create html file: ${pagepath}`);
+      return fs.writeFile(`${dir}/${pagepath}`, html);
+    })
+    .then(() => {
+      debugPageLoader('Downloading page resources');
+      const tasks = resourceDetails.map(({ url: resourceUrl }) => {
+        const { pathname: path } = new URL(resourceUrl);
+        return path;
+      });
+      console.log('tasks: ', tasks);
+      return downloadResources(resourceDetails, dir);
+    })
+    .then(() => {
+      debugPageLoader(`html was successfully downloaded to "${dir}/${pagepath}"`);
       return `${dir}/${pagepath}`;
     })
     .catch((err) => {
-      throw new Error(`Something wrong: ${err}`);
+      throw new Error(err);
     });
 };
 
@@ -57,5 +64,6 @@ const pageLoader = (url, dir = process.cwd()) => {
 // pageLoader('https://ru.hexlet.io/courses', './load-courses');
 // pageLoader('https://htmlacademy.ru/', './load-courses');
 // pageLoader('https://test.test/', './load-courses');
-
+// page-loader -o page-loader https://test.test
+// page-loader -o /page-loader https://page-loader.hexlet.repl.co
 export default pageLoader;

@@ -1,8 +1,10 @@
+/* eslint-disable import/extensions */
 import { load } from 'cheerio';
 import path from 'path';
 import prettier from 'prettier';
 import axios from 'axios';
 import fs from 'fs/promises';
+import debugPageLoader from './debug.js';
 
 const resources = [
   { tag: 'script', attr: 'src' },
@@ -36,6 +38,7 @@ export const updateHtml = (html, origin, originpath, filespath) => {
     });
   });
 
+  debugPageLoader('update urls inside the downloaded html');
   const updatedHtml = prettier.format($.html(), { parser: 'html' });
 
   return { updatedHtml, resourceDetails };
@@ -43,9 +46,12 @@ export const updateHtml = (html, origin, originpath, filespath) => {
 
 export const downloadResources = (resourceDetails, dir) => {
   const promises = resourceDetails.map(({ filename, url }) => axios.get(url, { responseType: 'arraybuffer' })
-    .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data))
+    .then(({ data }) => {
+      debugPageLoader(`Create page's resources file: ${filename}`);
+      return fs.writeFile(`${dir}/${filename}`, data);
+    })
     .catch((err) => {
-      throw new Error(`Error in downloading resource: ${err}`);
+      throw new Error(`Error in downloading resource: ${err.message}`);
     }));
 
   return Promise.all(promises);
