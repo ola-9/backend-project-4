@@ -1,10 +1,10 @@
 /* eslint-disable import/extensions */
 import axios from 'axios';
 import fs from 'fs/promises';
-// import Listr from 'listr';
+import Listr from 'listr';
 import {
   updateHtml,
-  downloadResources,
+  // downloadResources,
 } from './resources.js';
 import debugPageLoader from './debug.js';
 
@@ -44,25 +44,26 @@ const pageLoader = (url, dir = process.cwd()) => {
     })
     .then(() => {
       debugPageLoader('Downloading page resources');
-      const tasks = resourceDetails.map(({ url: resourceUrl }) => {
+      const resources = resourceDetails.map(({ filename, url: resourceUrl }) => {
         const { pathname: path } = new URL(resourceUrl);
-        return path;
+        return {
+          title: path,
+          task: () => axios.get(url, { responseType: 'arraybuffer' })
+            .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data)),
+        };
       });
-      console.log('tasks: ', tasks);
-      return downloadResources(resourceDetails, dir);
-    })
-    .then(() => {
-      debugPageLoader(`html was successfully downloaded to "${dir}/${pagepath}"`);
-      return `${dir}/${pagepath}`;
-    })
-    .catch((err) => {
-      throw new Error(err);
+
+      // const tasks = new Listr(Promise.all(resources), { concurrent: true });
+      const tasks = new Listr(resources, { concurrent: true });
+
+      // console.log('tasks: ', tasks);
+      // return downloadResources(resourceDetails, dir);
+      return tasks.run().then(() => `${dir}/${pagepath}`);
     });
 };
 
 // pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
 // pageLoader('https://ru.hexlet.io/courses', './load-courses');
-// pageLoader('https://htmlacademy.ru/', './load-courses');
 // pageLoader('https://test.test/', './load-courses');
 // page-loader -o page-loader https://test.test
 // page-loader -o /page-loader https://page-loader.hexlet.repl.co

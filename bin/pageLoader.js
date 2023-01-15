@@ -10,7 +10,7 @@ program
   .option('-o, --output [dir]', 'output dir (default: "/home/user/current-dir")')
   .argument('<url>')
   .action((url, option) => pageLoader(url, option.output)
-    .then((result) => console.log(`Page was loaded to ${result}`))
+    .then((result) => console.log(`Page was successfully downloaded into '${result}'`))
     .catch((err) => {
       console.error(`${err.message} while downloading the url: ${url}`);
       process.exit(1);
