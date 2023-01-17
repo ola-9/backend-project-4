@@ -44,21 +44,21 @@ const pageLoader = (url, dir = process.cwd()) => {
     })
     .then(() => {
       debugPageLoader('Downloading page resources');
-      // const resources = resourceDetails.map(({ filename, url: resourceUrl }) => {
-      //   const { pathname: path } = new URL(resourceUrl);
-      //   return {
-      //     title: path,
-      //     task: () => axios.get(url, { responseType: 'arraybuffer' })
-      //       .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data)),
-      //   };
-      // });
+      const resources = resourceDetails.map(({ filename, url: resourceUrl }) => {
+        const { pathname: path } = new URL(resourceUrl);
+        return {
+          title: path,
+          task: () => axios.get(url, { responseType: 'arraybuffer' })
+            .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data)),
+        };
+      });
 
       // const tasks = new Listr(Promise.all(resources), { concurrent: true });
-      // const tasks = new Listr(resources, { concurrent: true });
+      const tasks = new Listr(resources, { concurrent: true });
 
       // console.log('tasks: ', tasks);
-      return downloadResources(resourceDetails, dir);
-      // return tasks.run();
+      // return downloadResources(resourceDetails, dir);
+      return tasks.run();
     })
     .then(() => `${dir}/${pagepath}`);
 };
