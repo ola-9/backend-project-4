@@ -54,7 +54,7 @@ const pageLoader = (url, dir = process.cwd()) => {
         };
       });
 
-      const tasks = new Listr(resources, { concurrent: true });
+      const tasks = new Listr(resources, { concurrent: false });
 
       // return downloadResources(resourceDetails, dir);
       return tasks.run();
