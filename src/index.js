@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import Listr from 'listr';
 import {
   updateHtml,
-  downloadResources,
+  // downloadResources,
 } from './resources.js';
 import debugPageLoader from './debug.js';
 
@@ -49,14 +49,13 @@ const pageLoader = (url, dir = process.cwd()) => {
         return {
           title: path,
           task: () => axios.get(url, { responseType: 'arraybuffer' })
-            .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data)),
+            .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data))
+            .catch((err) => console.error(err)),
         };
       });
 
-      // const tasks = new Listr(Promise.all(resources), { concurrent: true });
       const tasks = new Listr(resources, { concurrent: true });
 
-      // console.log('tasks: ', tasks);
       // return downloadResources(resourceDetails, dir);
       return tasks.run();
     })

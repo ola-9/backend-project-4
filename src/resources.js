@@ -40,7 +40,7 @@ export const updateHtml = (html, origin, originpath, filespath) => {
 
   debugPageLoader('update urls inside the downloaded html');
   const updatedHtml = prettier.format($.html(), { parser: 'html' });
-
+  // console.log('##### ', resourceDetails);
   return { updatedHtml, resourceDetails };
 };
 

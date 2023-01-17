@@ -46,7 +46,11 @@ test('page and resources are downloaded', async () => {
     .get('/assets/application.css')
     .reply(200, expectedImg)
     .get('/packs/js/runtime.js')
-    .reply(200, expectedImg)
+    .reply(200, expectedImg);
+
+  // https://stackoverflow.com/questions/48674675/error-nock-no-match-for-request
+  nock('https://ru.hexlet.io')
+    .persist() //
     .get('/courses')
     .reply(200, expectedImg);
 
