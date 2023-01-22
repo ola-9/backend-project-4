@@ -2,8 +2,6 @@
 import { load } from 'cheerio';
 import path from 'path';
 import prettier from 'prettier';
-import axios from 'axios';
-import fs from 'fs/promises';
 import debugPageLoader from './debug.js';
 
 const resources = [
@@ -12,7 +10,7 @@ const resources = [
   { tag: 'link', attr: 'href' },
 ];
 
-export const updateHtml = (html, origin, originpath, filespath) => {
+const updateHtml = (html, origin, originpath, filespath) => {
   const $ = load(html);
   const resourceDetails = [];
   resources.forEach(({ tag, attr }) => {
@@ -40,34 +38,7 @@ export const updateHtml = (html, origin, originpath, filespath) => {
 
   debugPageLoader('update urls inside the downloaded html');
   const updatedHtml = prettier.format($.html(), { parser: 'html' });
-  // console.log('##### ', resourceDetails);
   return { updatedHtml, resourceDetails };
 };
 
-export const downloadResources = (resourceDetails, dir) => {
-  const promises = resourceDetails.map(({ filename, url }) => axios.get(url, { responseType: 'arraybuffer' })
-    .then(({ data }) => {
-      debugPageLoader(`Create page's resources file: ${filename}`);
-      return fs.writeFile(`${dir}/${filename}`, data);
-    })
-    .catch((err) => {
-      throw new Error(`Error in downloading resource: ${err.message}`);
-    }));
-
-  return Promise.all(promises);
-};
-
-// urlObj:  URL {
-//   href: 'https://ru.hexlet.io/packs/js/runtime.js',
-//   origin: 'https://ru.hexlet.io',
-//   protocol: 'https:',
-//   username: '',
-//   password: '',
-//   host: 'ru.hexlet.io',
-//   hostname: 'ru.hexlet.io',
-//   port: '',
-//   pathname: '/packs/js/runtime.js',
-//   search: '',
-//   searchParams: URLSearchParams {},
-//   hash: ''
-// }
+export default updateHtml;

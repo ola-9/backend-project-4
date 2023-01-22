@@ -1,19 +1,10 @@
 /* eslint-disable import/extensions */
-import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 import Listr from 'listr';
-import {
-  updateHtml,
-  // downloadResources,
-} from './resources.js';
+import updateHtml from './resources.js';
 import debugPageLoader from './debug.js';
-
-const getPathname = (hostname, pathname = '', type = '') => {
-  const currPath = pathname.length === 1 ? '' : pathname;
-  const formatted = `${hostname}${currPath}`.replace(/[^a-zA-Z0-9]/g, '-');
-  return `${formatted}${type}`;
-};
+import { getPathname, loadUrl } from './utils.js';
 
 const pageLoader = (url, dir = process.cwd()) => {
   const { origin, hostname, pathname } = new URL(url);
@@ -24,9 +15,8 @@ const pageLoader = (url, dir = process.cwd()) => {
 
   let html = '';
   let resourceDetails = [];
-  // const resources = [];
 
-  return axios.get(url)
+  return loadUrl(url)
     .then(({ data }) => {
       const result = updateHtml(data, origin, originpath, filespath);
       resourceDetails = result.resourceDetails;
@@ -46,15 +36,15 @@ const pageLoader = (url, dir = process.cwd()) => {
     })
     .then(() => {
       debugPageLoader('Downloading page resources');
-      const promises = resourceDetails.map(({ filename, url: resourceUrl }) => axios
-        .get(resourceUrl, { responseType: 'arraybuffer' })
-        .then(({ data }) => {
-          debugPageLoader(`Create page's resources file: ${filename}`);
-          return { filename, fileData: data };
-        })
-        .catch((err) => {
-          throw new Error(`Error in downloading resource: ${err.message}`);
-        }));
+      const promises = resourceDetails
+        .map(({ filename, url: resourceUrl }) => loadUrl(resourceUrl, { responseType: 'arraybuffer' })
+          .then(({ data }) => {
+            debugPageLoader(`Create page's resources file: ${filename}`);
+            return { filename, fileData: data };
+          })
+          .catch((err) => {
+            throw new Error(`Error in downloading resource: ${err.message}`);
+          }));
 
       return Promise.all(promises);
     })
@@ -75,9 +65,4 @@ const pageLoader = (url, dir = process.cwd()) => {
     .then(() => `${dir}/${pagepath}`);
 };
 
-// pageLoader('https://page-loader.hexlet.repl.co', './page-loader');
-// pageLoader('https://ru.hexlet.io/courses', './load-courses');
-// pageLoader('https://test.test/', './load-courses');
-// page-loader -o page-loader https://test.test
-// page-loader -o /page-loader https://page-loader.hexlet.repl.co
 export default pageLoader;
