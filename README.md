@@ -9,3 +9,6 @@
 
 ## Example of error handling
 [![asciicast](https://asciinema.org/a/9FMsE2XHV4blnOPvOJDAlknJr.svg)](https://asciinema.org/a/9FMsE2XHV4blnOPvOJDAlknJr)
+
+## Example of page-loader displaying downloading status
+[![asciicast](https://asciinema.org/a/bpFI6d33WCH4La5KqbGrSV52Z.svg)](https://asciinema.org/a/bpFI6d33WCH4La5KqbGrSV52Z)

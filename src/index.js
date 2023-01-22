@@ -1,6 +1,7 @@
 /* eslint-disable import/extensions */
 import axios from 'axios';
 import fs from 'fs/promises';
+import path from 'path';
 import Listr from 'listr';
 import {
   updateHtml,
@@ -9,8 +10,8 @@ import {
 import debugPageLoader from './debug.js';
 
 const getPathname = (hostname, pathname = '', type = '') => {
-  const path = pathname.length === 1 ? '' : pathname;
-  const formatted = `${hostname}${path}`.replace(/[^a-zA-Z0-9]/g, '-');
+  const currPath = pathname.length === 1 ? '' : pathname;
+  const formatted = `${hostname}${currPath}`.replace(/[^a-zA-Z0-9]/g, '-');
   return `${formatted}${type}`;
 };
 
@@ -23,6 +24,7 @@ const pageLoader = (url, dir = process.cwd()) => {
 
   let html = '';
   let resourceDetails = [];
+  // const resources = [];
 
   return axios.get(url)
     .then(({ data }) => {
@@ -44,23 +46,30 @@ const pageLoader = (url, dir = process.cwd()) => {
     })
     .then(() => {
       debugPageLoader('Downloading page resources');
-      const resources = resourceDetails.map(({ filename, url: resourceUrl }) => {
-        const { pathname: path } = new URL(resourceUrl);
-        return {
-          title: path,
-          task: () => axios.get(url, { responseType: 'arraybuffer' })
-            .then(({ data }) => fs.writeFile(`${dir}/${filename}`, data))
-            .catch((err) => console.error(err)),
-        };
-      });
-      return resources;
-      // const tasks = new Listr(resources, { concurrent: true });
+      const promises = resourceDetails.map(({ filename, url: resourceUrl }) => axios
+        .get(resourceUrl, { responseType: 'arraybuffer' })
+        .then(({ data }) => {
+          debugPageLoader(`Create page's resources file: ${filename}`);
+          return { filename, fileData: data };
+        })
+        .catch((err) => {
+          throw new Error(`Error in downloading resource: ${err.message}`);
+        }));
 
-      // return downloadResources(resourceDetails, dir);
-      // return tasks.run();
+      return Promise.all(promises);
     })
     .then((data) => {
-      const tasks = new Listr(data, { concurrent: true });
+      debugPageLoader('Writing resources data into files');
+      const resources = data.map(({ filename, fileData }) => {
+        const { base } = path.parse(filename);
+        const obj = {
+          title: base,
+          task: () => fs.writeFile(`${dir}/${filename}`, fileData),
+        };
+        return obj;
+      });
+
+      const tasks = new Listr(resources, { concurrent: true });
       return tasks.run();
     })
     .then(() => `${dir}/${pagepath}`);
