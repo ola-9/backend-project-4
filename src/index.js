@@ -53,10 +53,14 @@ const pageLoader = (url, dir = process.cwd()) => {
             .catch((err) => console.error(err)),
         };
       });
-
-      const tasks = new Listr(resources, { concurrent: false });
+      return resources;
+      // const tasks = new Listr(resources, { concurrent: true });
 
       // return downloadResources(resourceDetails, dir);
+      // return tasks.run();
+    })
+    .then((data) => {
+      const tasks = new Listr(data, { concurrent: true });
       return tasks.run();
     })
     .then(() => `${dir}/${pagepath}`);
