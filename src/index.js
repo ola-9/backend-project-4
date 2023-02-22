@@ -6,6 +6,12 @@ import updateHtml from './resources.js';
 import debugPageLoader from './debug.js';
 import { getPathname, loadUrl } from './utils.js';
 
+const generateTask = (dirpath, resourseName, resourseUrl) => {
+  const promise = loadUrl(resourseUrl)
+    .then(({ data }) => fs.writeFile(`${dirpath}/${resourseName}`, data));
+  return promise;
+};
+
 const pageLoader = (url, dir = process.cwd()) => {
   const { origin, hostname, pathname } = new URL(url);
 
@@ -33,17 +39,11 @@ const pageLoader = (url, dir = process.cwd()) => {
       return fs.writeFile(`${dir}/${pagepath}`, html);
     })
     .then(() => {
-      const generateTask = (resourseName, resourseUrl) => {
-        const promise = loadUrl(resourseUrl)
-          .then((fileData) => fs.writeFile(`${dir}/${resourseName}`, fileData.toString()));
-        return promise;
-      };
-
-      const tasks = resourceDetails.map(({ filename, url }) => {
+      const tasks = resourceDetails.map(({ filename, url: resourceUrl }) => {
         const { base } = path.parse(filename);
         const task = {
           title: base,
-          task: () => generateTask(filename, url),
+          task: () => generateTask(dir, filename, resourceUrl),
         };
         return task;
       });
