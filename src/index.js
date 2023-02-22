@@ -7,7 +7,7 @@ import debugPageLoader from './debug.js';
 import { getPathname, loadUrl } from './utils.js';
 
 const generateTask = (dirpath, resourseName, resourseUrl) => {
-  const promise = loadUrl(resourseUrl)
+  const promise = loadUrl(resourseUrl, { responseType: 'arraybuffer' })
     .then(({ data }) => fs.writeFile(`${dirpath}/${resourseName}`, data));
   return promise;
 };
