@@ -21,8 +21,6 @@ const pageLoader = (url, dir = process.cwd()) => {
       const result = updateHtml(data, origin, originpath, filespath);
       resourceDetails = result.resourceDetails;
       html = result.updatedHtml;
-    })
-    .then(() => {
       debugPageLoader(`Create page directory: ${dir}`);
       return fs.mkdir(dir, { recursive: true });
     })
@@ -35,34 +33,25 @@ const pageLoader = (url, dir = process.cwd()) => {
       return fs.writeFile(`${dir}/${pagepath}`, html);
     })
     .then(() => {
-      debugPageLoader('Downloading page resources');
-      const promises = resourceDetails
-        .map(({ filename, url: resourceUrl }) => loadUrl(resourceUrl, { responseType: 'arraybuffer' })
-          .then(({ data }) => {
-            debugPageLoader(`Create page's resources file: ${filename}`);
-            return { filename, fileData: data };
-          })
-          .catch((err) => {
-            throw new Error(`Error in downloading resource: ${err.message}`);
-          }));
+      const generateTask = (resourseName, resourseUrl) => {
+        const promise = loadUrl(resourseUrl)
+          .then((fileData) => fs.writeFile(`${dir}/${resourseName}`, fileData.toString()));
+        return promise;
+      };
 
-      return Promise.all(promises);
-    })
-    .then((data) => {
-      debugPageLoader('Writing resources data into files');
-      const resources = data.map(({ filename, fileData }) => {
+      const tasks = resourceDetails.map(({ filename, url }) => {
         const { base } = path.parse(filename);
-        const obj = {
+        const task = {
           title: base,
-          task: () => fs.writeFile(`${dir}/${filename}`, fileData),
+          task: () => generateTask(filename, url),
         };
-        return obj;
+        return task;
       });
 
-      const tasks = new Listr(resources, { concurrent: true });
-      return tasks.run();
+      const listr = new Listr(tasks, { concurrent: true });
+      return listr.run();
     })
-    .then(() => `${dir}/${pagepath}`);
+    .then(() => path.join(dir, pagepath));
 };
 
 export default pageLoader;
