@@ -12,3 +12,6 @@
 
 ## Example of page-loader displaying downloading status
 [![asciicast](https://asciinema.org/a/bpFI6d33WCH4La5KqbGrSV52Z.svg)](https://asciinema.org/a/bpFI6d33WCH4La5KqbGrSV52Z)
+
+## Example of page-loader debug
+[![asciicast](https://asciinema.org/a/hzKQWQFQyRzSRrMV7cTfIzzdK.svg)](https://asciinema.org/a/hzKQWQFQyRzSRrMV7cTfIzzdK)

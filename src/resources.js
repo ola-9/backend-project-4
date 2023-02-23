@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import { load } from 'cheerio';
 import path from 'path';
 import prettier from 'prettier';
@@ -11,13 +10,13 @@ const resources = [
 ];
 
 const updateHtml = (html, origin, originpath, filespath) => {
+  debugPageLoader('Getting the page html');
   const $ = load(html);
   const resourceDetails = [];
   resources.forEach(({ tag, attr }) => {
-    $(tag).toArray().forEach((item) => { // https://api.jquery.com/toarray/
+    $(tag).toArray().forEach((item) => {
       const itemAttr = $(item).attr(attr);
-      // https://www.designcise.com/web/tutorial/how-to-check-if-an-element-has-attribute-using-jquery-and-javascript
-      if (typeof itemAttr === 'undefined') { // if attribute doesn't exist
+      if (typeof itemAttr === 'undefined') {
         return;
       }
       const urlObj = new URL(itemAttr, origin);
@@ -36,7 +35,7 @@ const updateHtml = (html, origin, originpath, filespath) => {
     });
   });
 
-  debugPageLoader('update urls inside the downloaded html');
+  debugPageLoader('Updating resources urls of the page');
   const updatedHtml = prettier.format($.html(), { parser: 'html' });
   return { updatedHtml, resourceDetails };
 };
